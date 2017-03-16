@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd   
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.syg.manage" />
+	<!-- 解密 配置 -->
+	<bean class="com.syg.common.PropertyMPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:init.cla</value>
+			</list>
+		</property>
+		<property name="initLocation">
+			<value>classpath:initLocation.cla</value>
+		</property>
+		<property name="fileEncoding" value="utf-8" />
+	</bean>
+	
+	<!-- 读取配置 -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> 
+		<property name="location">
+			<value>classpath:init.cla</value>
+		</property>
+		<property name="fileEncoding" value="utf-8" />
+	</bean>
+
+	<bean id="manageDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${manage.driverClassName}" />
+		<property name="jdbcUrl" value="${manage.url}" />
+		<property name="user" value="${manage.username}" />
+		<property name="password" value="${manage.password}" />
+		<property name="initialPoolSize" value="1" />
+		<property name="minPoolSize" value="1" />
+		<property name="maxPoolSize" value="3" />
+		<property name="maxIdleTime" value="600" />
+		<property name="maxStatements" value="100" />
+		<property name="acquireIncrement" value="1" />
+		<property name="automaticTestTable" value="t_c3p0_Test"/>
+	</bean>
+	
+	<!-- SessonFactory 配置
+	
+	<bean id="manageSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="manageDataSource" />
+		<property name="configLocation" value="classpath:com/syg/manage/dao/manage_cfg.xml" />
+		<property name="typeAliasesPackage" value="com.syg.manage.model.manage" />
+	</bean>
+	-->
+
+	<bean id="manageSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="manageDataSource" />
+		<property name="configLocation" value="classpath:com/syg/manage/dao/manage_cfg.xml" />
+		<property name="typeAliasesPackage" value="com.syg.manage.model.manage" />
+	</bean>
+	
+	<!-- 
+	
+	<bean class="org.mybatis.spring.MyBatisExceptionTranslator">
+		<constructor-arg name="dataSource" ref="manageDataSource" />
+		<constructor-arg name="exceptionTranslatorLazyInit"	type="boolean" value="false" />
+	</bean>
+	 -->
+	
+	<bean class="org.mybatis.spring.MyBatisExceptionTranslator">
+		<constructor-arg name="dataSource" ref="manageDataSource" />
+		<constructor-arg name="exceptionTranslatorLazyInit"	type="boolean" value="false" />
+	</bean>
+	
+	<!-- 对应的自动扫描 配置
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.syg.manage.dao.manage" />
+		<property name="sqlSessionFactoryBeanName" value="manageSessionFactory" />
+	</bean>
+	 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+			<property name="basePackage" value="com.syg.manage.dao.manage" />
+			<property name="sqlSessionFactoryBeanName" value="manageSessionFactory" />
+	</bean>
+	
+	<!-- Redis DataSource 
+	<bean class="com.syg.manage.dao.redis.RedisServer">
+		<constructor-arg name="redisHost" value="${redis.ip}"/>	
+		<constructor-arg name="redisPort" value="${redis.port}"/>
+		<constructor-arg name="password" value="${redis.password}"/>
+	</bean>
+	-->
+</beans>
+
+
